@@ -1,5 +1,5 @@
 import { cert, initializeApp, type ServiceAccount } from 'firebase-admin/app';
-import serviceAccount from '../../serviceAccountKey.json';
+import serviceAccount from '../configs/serviceAccountKey.json';
 import { getFirestore } from 'firebase-admin/firestore';
 import { ERROR_CODE, logger } from '../lib';
 import dayjs, { type Dayjs } from 'dayjs';
@@ -18,7 +18,7 @@ const db = getFirestore();
 let users: User[] = [];
 let alarms: Alarm[] = [];
 
-function registerObservers() {
+export function registerObservers() {
   db.collection('users').onSnapshot(
     snapshots => {
       const data: User[] = [];
@@ -47,19 +47,25 @@ function registerObservers() {
     },
   );
 }
-registerObservers();
 
 export async function getUser(uid: string, first_name?: string) {
   const user = users.find(e => e.uid === uid);
   if (user) {
     return user;
   }
-  await db.collection('users').add({ uid, first_name });
-  return { uid, first_name };
+  const doc = await db.collection('users').add({ uid, first_name });
+  return { uid, first_name, docId: doc.id } as Partial<User>;
 }
 
 export async function updateUser(docId: string, data: Partial<User>) {
   await db.collection('users').doc(docId).update(data);
+}
+
+export async function updateUserByUid(uid: string, data: Partial<User>) {
+  const user = await getUser(uid);
+  if (user.docId) {
+    await db.collection('users').doc(user.docId).update(data);
+  }
 }
 
 export function getAlarms(uid: string) {
