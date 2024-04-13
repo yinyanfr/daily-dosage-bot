@@ -5,6 +5,6 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
-const time = dayjs('12:00', 'hh:mm').utc().utcOffset(8);
+const time = dayjs('38:00', 'hh:mm').utc().utcOffset(8);
 
 console.log(time.format());

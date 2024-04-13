@@ -37,3 +37,26 @@ if (process.env.NODE_ENV === 'development') {
     }),
   );
 }
+
+export function parseArgs(input: string) {
+  const regex =
+    /(?:「[^」]*」|『[^』]*』|《[^》]*》|“[^”]*”|"[^"]*"|'[^']*'|[^ ])+/g;
+
+  // const symbols = [
+  //   ['「', '」'],
+  //   ['『', '』'],
+  //   ['《', '》'],
+  //   ['“', '”'],
+  //   ['"', '"'],
+  //   ["'", "'"],
+  // ];
+  // const regex = new RegExp(
+  //   `(?:${symbols
+  //     .map(([left, right]) => `${left}[^${right}]${right}`)
+  //     .join('|')})+`,
+  //   'g',
+  // );
+  return input
+    .match(regex)
+    ?.map(item => item.trim().replace(/^「|」|『|』|《|》|“|”|"|'$/g, ''));
+}
